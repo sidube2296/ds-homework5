@@ -12,6 +12,8 @@ public class Nondiscrimination implements Comparator<Player> {
 	@Override // required
 	public int compare(Player o1, Player o2) {
 		// TODO: Implement this method.
+		return 0;
+
 	}
 
 	@Override // implementation
