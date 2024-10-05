@@ -80,7 +80,39 @@ public class Player {
 		//	   we can't assume all classes that utilize Player will do so. That is why
 		//	   we must consider all scenarios, including those where this method is
 		//	   called on a player in the middle or end of the list.
+		if (p == null || priority == null) {
+	        throw new IllegalArgumentException("Player or comparator cannot be null.");
+	    }
 
+	    // Case 1: If `p` should be inserted before the current player (`this`):
+	    if (priority.compare(p, this) > 0) {
+	        // Insert `p` before `this`
+	        p.next = this;
+	        p.prev = this.prev;
+
+	        if (this.prev != null) {
+	            this.prev.next = p;
+	        }
+	        
+	        this.prev = p;
+
+	        // Handle the case when `p` becomes the new head of the list.
+	        if (p.prev == null) {
+	            // Assuming there is an external reference managing the head,
+	            // p should be the new head.
+	        }
+	    } else {
+	        // Case 2: Traverse forward to find the correct place for `p`.
+	        if (this.next == null) {
+	            // If at the end, add `p` here
+	            this.next = p;
+	            p.prev = this;
+	        } else {
+	            // Continue traversing the list recursively
+	            this.next.addInPriority(p, priority);
+	        }
+	    }
+		
 	}
 
 	/**
@@ -92,6 +124,7 @@ public class Player {
 	public void sortByPriority(Comparator<Player> c) {
 		// TODO: Implement this method.  Use a loop here and then recursion
 		// when everything OK up to the next one.
+		
 	}
 
 	/**
@@ -100,6 +133,10 @@ public class Player {
 	 */
 	public void remove() {
 		// TODO: Implement this method.  No loops or recursion required.
+		if (prev != null) prev.next = next;
+        if (next != null) next.prev = prev;
+        prev = null;
+        next = null;
 	}
 
 
