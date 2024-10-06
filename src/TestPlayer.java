@@ -1733,5 +1733,18 @@ public class TestPlayer extends TestCase {
 		p3.sortByPriority(c);
 		testPlayers(p4, p1, p2, p3);
 	}
+	
+	public void testS50() {
+	c = conceal(HigherScore.getInstance());
+	p1 = new Player("P1", 20, Position.Tight_End);
+	p2 = new Player("P2", 30, Position.Defensive_Line);
+	p3 = new Player("P3", 10, Position.Quarterback);
+	p4 = new Player("P4", 40, Position.Kicker);
 
+	p1.addInPriority(p2, Nondiscrimination.getInstance());
+	p2.addInPriority(p3, Nondiscrimination.getInstance());
+	p3.addInPriority(p4, Nondiscrimination.getInstance());
+
+	p1.sortByPriority(c);
+	testPlayers(p4, p2, p1, p3);}
 }
