@@ -63,6 +63,9 @@ public class Team {
 	 */
 	public Team(Comparator<Player> c, String n) {
 		// TODO
+		this.priority = c;
+        this.teamName = n;
+        this.dummy = new Player("", Integer.MAX_VALUE, null);
 		assert wellFormed() : "invariant fails at end of constructor";}
 
 	private Team(boolean ignored) {} // DO NOT CHANGE THIS
@@ -78,7 +81,13 @@ public class Team {
 		assert wellFormed() : "invariant fails at beginning of add";
 		
 		// TODO: implement this method (no loops!)
-
+		if (t == null) throw new NullPointerException("Player cannot be null");
+	       
+        if (t.getPrevious() != null || t.getNext() != null) {
+            throw new IllegalArgumentException("Player is already in a team");
+        }
+        dummy.addInPriority(t, priority);
+        
 		assert wellFormed() : "invariant fails at end of add";
 	}
 
@@ -126,7 +135,8 @@ public class Team {
 	 * @return number of players
 	 */
 	public int size() {
-		return 0; // TODO (don't count the dummy!)
+		// TODO (don't count the dummy!)
+		return 0;
 	}
 	
 	/**
