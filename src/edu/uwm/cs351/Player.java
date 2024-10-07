@@ -93,10 +93,12 @@ public class Player {
 		            this.prev.next = p;
 		            this.prev = p;
 		        } else {
+		        	
 		            // Recursively checking equal priority with the previous node
 		            this.prev.addInPriority(p, priority);
 		        }
 		    } else {
+		    	
 		        // If there is no previous node, make p the new head
 		        this.prev = p;
 		        p.next = this;
@@ -105,6 +107,7 @@ public class Player {
 		    if (this.next != null) {
 		        int nextComparisonResult = priority.compare(p, this.next);
 		        if (nextComparisonResult < 0) {
+		        	
 		            // Finding the correct position through recursively calling the next nodes
 		            this.next.addInPriority(p, priority);
 		        } else if (nextComparisonResult > 0) {
@@ -114,15 +117,18 @@ public class Player {
 		            this.next.prev = p;
 		            this.next = p;
 		        } else {
+		        	
 		            // If it has same priority as the next node; continue searching for an insertion point
 		            this.next.addInPriority(p, priority);
 		        }
 		    } else {
+		    	
 		        // Append p here ,if there is no next node
 		        this.next = p;
 		        p.prev = this;
 		    }
 		} else {
+			
 		    // If players have equal priority, inserting p directly after this
 		    p.next = this.next;
 		    p.prev = this;
@@ -142,39 +148,43 @@ public class Player {
 	public void sortByPriority(Comparator<Player> c) {
 		// TODO: Implement this method.  Use a loop here and then recursion
 		// when everything OK up to the next one.
-		// TODO: Implement this method.  Use a loop here and then recursion	
-		if (c == null) throw new NullPointerException("Comparator cannot be null");
+		
+		// Initializing currentNode if a next node exists.
+		Player currentNode = (this.next != null) ? this : null;
 
-	    Player current = this.next;
+		// Checking if the nodes are already sorted
+		if (currentNode != null && currentNode.next != null && c.compare(currentNode, currentNode.next) == 0) {
+		    currentNode = currentNode.next;
 
-	    // Loop to iterate through each node and sort them progressively
-	    while (current != null) {
-	        Player nextNode = current.next;
+		    // Traversing while the nodes are sorted
+		    while (currentNode != null && currentNode.next != null && c.compare(currentNode, currentNode.next) <= 0) {
+		        currentNode = currentNode.next;
 
-	        // Disconnect current node from the list
-	        if (current.prev != null) {
-	            current.prev.next = current.next;
-	        }
-	        if (current.next != null) {
-	            current.next.prev = current.prev;
-	        }
+		        // Nodes are sorted if we reach the end 
+		        if (currentNode.next == null) {
+		            return;
+		        }
+		    }
+		}
 
-	        // Remove current node's links before reinserting
-	        current.prev = null;
-	        current.next = null;
+		// Start the sorting from the next node
+		currentNode = this.next;
+		this.next = null;
 
-	        // Insert the current node into the correct position using addInPriority
-	        this.addInPriority(current, c);
+		// Inserting the node in sorted order
+		while (currentNode != null) {
+		    Player nextToProcess = currentNode.next;
+		    currentNode.next = currentNode.prev = null;
+		    addInPriority(currentNode, c);
+		    currentNode = nextToProcess;
+		}
 
-	        // Move to the next node in the original list
-	        current = nextNode;
-	    }
-
-	    // Recursive part to ensure sorting for the remaining part of the list
-	    if (this.next != null) {
-	        this.next.sortByPriority(c);
-	    }
+		// Calling recursively until the rest nodes are sorted completely
+		if (this.next != null) {
+		    this.next.sortByPriority(c);
+		}
 	}
+	
 	/**
 	 * Remove this item from its list.
 	 * This player will be completely disconnected from any other players.
