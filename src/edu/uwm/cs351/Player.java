@@ -39,7 +39,7 @@ public class Player {
 	/** Gets the name.
 	 * @return the name */
 	public String getName() {return name;}
-	
+
 	/** Gets this player's score.
 	 * @return the score */
 	public int getScore() {return score;}
@@ -47,7 +47,7 @@ public class Player {
 	/** Sets the score.
 	 * @param the score */
 	public void setScore(int score) {this.score = score;}
-	
+
 	/** Gets this player's position.
 	 * @return the position */
 	public Position getPosition() {return position;}
@@ -80,41 +80,59 @@ public class Player {
 		//	   we can't assume all classes that utilize Player will do so. That is why
 		//	   we must consider all scenarios, including those where this method is
 		//	   called on a player in the middle or end of the list.
-		if (p == null || priority == null) {
-	        throw new IllegalArgumentException("Player or comparator cannot be null.");
-	    }
-
-	    // Case 1: If `p` should be inserted before the current player (`this`):
-	    if (priority.compare(p, this) > 0) {
-	        // Insert `p` before `this`
-	        p.next = this;
-	        p.prev = this.prev;
-
-	        if (this.prev != null) {
-	            this.prev.next = p;
-	        }
-	        
-	        this.prev = p;
-
-	        // Handle the case when `p` becomes the new head of the list.
-	        if (p.prev == null) {
-	            // Assuming there is an external reference managing the head,
-	            // p should be the new head.
-	        }
-	    } else {
-	        // Case 2: Traverse forward to find the correct place for `p`.
-	        if (this.next == null) {
-	            // If at the end, add `p` here
-	            this.next = p;
-	            p.prev = this;
-	        } else {
-	            // Continue traversing the list recursively
-	            this.next.addInPriority(p, priority);
-	        }
-	    }
-		
+		if (priority.compare(p, this) > 0) {
+		    if (this.prev != null) {
+		        int prevComparisonResult = priority.compare(p, this.prev);
+		        if (prevComparisonResult > 0) {
+		            //Finding the correct position through recursively calling the previous nodes
+		            this.prev.addInPriority(p, priority);
+		        } else if (prevComparisonResult < 0) {
+		            // Inserting p before this node
+		            p.prev = this.prev;
+		            p.next = this;
+		            this.prev.next = p;
+		            this.prev = p;
+		        } else {
+		            // Recursively checking equal priority with the previous node
+		            this.prev.addInPriority(p, priority);
+		        }
+		    } else {
+		        // If there is no previous node, make p the new head
+		        this.prev = p;
+		        p.next = this;
+		    }
+		} else if (priority.compare(p, this) < 0) {
+		    if (this.next != null) {
+		        int nextComparisonResult = priority.compare(p, this.next);
+		        if (nextComparisonResult < 0) {
+		            // Finding the correct position through recursively calling the next nodes
+		            this.next.addInPriority(p, priority);
+		        } else if (nextComparisonResult > 0) {
+		            // Inserting p after this node
+		            p.next = this.next;
+		            p.prev = this;
+		            this.next.prev = p;
+		            this.next = p;
+		        } else {
+		            // If it has same priority as the next node; continue searching for an insertion point
+		            this.next.addInPriority(p, priority);
+		        }
+		    } else {
+		        // Append p here ,if there is no next node
+		        this.next = p;
+		        p.prev = this;
+		    }
+		} else {
+		    // If players have equal priority, inserting p directly after this
+		    p.next = this.next;
+		    p.prev = this;
+		    if (this.next != null) {
+		        this.next.prev = p;
+		    }
+		    this.next = p;
+		}
 	}
-
+	
 	/**
 	 * Assuming all the players before this one are sorted correctly
 	 * according to the priority and come before this one,
@@ -124,9 +142,39 @@ public class Player {
 	public void sortByPriority(Comparator<Player> c) {
 		// TODO: Implement this method.  Use a loop here and then recursion
 		// when everything OK up to the next one.
-		
-	}
+		// TODO: Implement this method.  Use a loop here and then recursion	
+		if (c == null) throw new NullPointerException("Comparator cannot be null");
 
+	    Player current = this.next;
+
+	    // Loop to iterate through each node and sort them progressively
+	    while (current != null) {
+	        Player nextNode = current.next;
+
+	        // Disconnect current node from the list
+	        if (current.prev != null) {
+	            current.prev.next = current.next;
+	        }
+	        if (current.next != null) {
+	            current.next.prev = current.prev;
+	        }
+
+	        // Remove current node's links before reinserting
+	        current.prev = null;
+	        current.next = null;
+
+	        // Insert the current node into the correct position using addInPriority
+	        this.addInPriority(current, c);
+
+	        // Move to the next node in the original list
+	        current = nextNode;
+	    }
+
+	    // Recursive part to ensure sorting for the remaining part of the list
+	    if (this.next != null) {
+	        this.next.sortByPriority(c);
+	    }
+	}
 	/**
 	 * Remove this item from its list.
 	 * This player will be completely disconnected from any other players.
@@ -134,9 +182,9 @@ public class Player {
 	public void remove() {
 		// TODO: Implement this method.  No loops or recursion required.
 		if (prev != null) prev.next = next;
-        if (next != null) next.prev = prev;
-        prev = null;
-        next = null;
+		if (next != null) next.prev = prev;
+		prev = null;
+		next = null;
 	}
 
 
@@ -147,5 +195,5 @@ public class Player {
 	public String toString() {
 		return "(" + name + ", " + position + ", " +score + "pts)";}
 
-	
+
 }
