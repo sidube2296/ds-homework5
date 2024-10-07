@@ -21,22 +21,38 @@ public class Team {
 
 	private boolean wellFormed() {
 		// The invariant:
-		// 1. The team name is not null
-		// TODO
-		// 2. dummy cannot be null
-		// TODO
-		// 3. The dummy should have no position (null),
-		// the asciibetically first name (the empty string),
-		// and the highest score possible.
-		// TODO
-		// 3. comparator is not null
-		// TODO
-		// 4. dummy is first node in team
-		// TODO
-		// 5. Every node with a next is the previous of its next.
-		// TODO
-		// NB: We do not promise that the players are in priority order.
-		return true;
+        // 1. The team name is not null
+    	
+        if (teamName == null) return report("Team name should not be null");
+        // 2. dummy cannot be null
+        
+        if (dummy == null) return report("Dummy player should not be null");
+        
+        // 3. The dummy should have no position (null), the asciibetically first name (the empty string), and the highest score possible.
+        
+        if (dummy.getPosition() != null) return report("Dummy position should be null");
+        if (!dummy.getName().isEmpty()) return report("Dummy name should be empty");
+        if (dummy.getScore() != Integer.MAX_VALUE) return report("Dummy score should not be not have the highest possible score");
+        
+        // 4. comparator is not null
+        
+        if (priority == null) return report("Comparator should not be null");
+        
+        // 5. dummy is first node in team
+        
+        if (dummy.getPrevious() != null) return report("Dummy is not the first node in the team");
+
+        // 6. Every node with a next is the previous of its next.
+        
+        Player current = dummy;
+        while (current != null) {
+            if (current.getNext() != null && current.getNext().getPrevious() != current) {
+                return report("Next node's previous should point to the current node");
+            }
+            current = current.getNext();
+        }
+        return true;
+        
 	}
 
 
