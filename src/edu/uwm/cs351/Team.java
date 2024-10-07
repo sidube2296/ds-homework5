@@ -136,7 +136,11 @@ public class Team {
 	 */
 	public int size() {
 		// TODO (don't count the dummy!)
-		return 0;
+		int count = 0;
+        for (Player i = dummy.getNext(); i != null; i = i.getNext()) {
+            count++;
+        }
+        return count;
 	}
 	
 	/**
@@ -146,7 +150,15 @@ public class Team {
      * @throws IndexOutOfBoundsException if the index is out of range.
 	 */
 	public Player get(int index) throws IndexOutOfBoundsException {
-		 * return null; // TODO
+		// TODO
+		if (index < 0 || index >= size()) {
+            throw new IndexOutOfBoundsException("Index out of bounds: " + index);
+        }
+        Player current = dummy.getNext();
+        for (int i = 0; i < index; i++) {
+            current = current.getNext();
+        }
+        return current; // Return the player at the specified position
 	}
 	
 	/**
@@ -155,9 +167,12 @@ public class Team {
 	 */
 	public int totalScore() {
 		assert wellFormed() : "invariant fails at beginning of totalScore";
-		int score = 0;
 		//TODO implement totalScore (don't use the dummy player!)
-		return score;
+		int score = 0;
+        for (Player i = dummy.getNext(); i != null; i = i.getNext()) {
+            score += i.getScore();
+        }
+        return score;
 	}
 	
 	/**
